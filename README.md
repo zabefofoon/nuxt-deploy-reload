@@ -1,84 +1,67 @@
-<!--
-Get your module up and running quickly.
+# nuxt-deploy-reload
 
-Find and replace all on all files (CMD+SHIFT+F):
-- Name: My Module
-- Package name: my-module
-- Description: My new Nuxt module
--->
+A Nuxt module that detects new deployments and automatically reloads the page on the client.
 
-# My Module
+## What It Does
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href]
-[![Nuxt][nuxt-src]][nuxt-href]
+- Updates a version file before the Nitro build (default: `public/version.json`).
+- Stores the current version in a cookie (`web-version`) on the client.
+- Re-checks version on first load and on route changes.
+- Calls `window.location.reload()` when a new version is detected.
 
-My new Nuxt module for doing amazing things.
-
-- [✨ &nbsp;Release Notes](/CHANGELOG.md)
-<!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/my-module?file=playground%2Fapp.vue) -->
-<!-- - [📖 &nbsp;Documentation](https://example.com) -->
-
-## Features
-
-<!-- Highlight some of the features your module provide here -->
-- ⛰ &nbsp;Foo
-- 🚠 &nbsp;Bar
-- 🌲 &nbsp;Baz
-
-## Quick Setup
-
-Install the module to your Nuxt application with one command:
+## Install
 
 ```bash
-npx nuxt module add my-module
+pnpm add -D nuxt-deploy-reload
 ```
 
-That's it! You can now use My Module in your Nuxt app ✨
+`nuxt.config.ts`:
 
+```ts
+export default defineNuxtConfig({
+    modules: ["nuxt-deploy-reload"],
+})
+```
 
-## Contribution
+## Configuration
 
-<details>
-  <summary>Local development</summary>
-  
-  ```bash
-  # Install dependencies
-  npm install
-  
-  # Generate type stubs
-  npm run dev:prepare
-  
-  # Develop with the playground
-  npm run dev
-  
-  # Build the playground
-  npm run dev:build
-  
-  # Run ESLint
-  npm run lint
-  
-  # Run Vitest
-  npm run test
-  npm run test:watch
-  
-  # Release new version
-  npm run release
-  ```
+`nuxt.config.ts`:
 
-</details>
+```ts
+export default defineNuxtConfig({
+    modules: ["nuxt-deploy-reload"],
+    deployReload: {
+        key: "version",
+        skipInDev: true,
+        checkIntervalMs: 30_000,
+        filePath: "public/version.json",
+    },
+})
+```
 
+Options:
 
-<!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/v/my-module/latest.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-version-href]: https://npmjs.com/package/my-module
+- `filePath?: string`
+    - Output path for the version file
+    - Default: `public/version.json`
+- `key?: string`
+    - Key name used in the version JSON
+    - Default: `"version"`
+- `initial?: number`
+    - Not used in the current implementation (reserved)
+- `skipInDev?: boolean`
+    - Skips module behavior in dev mode when `true`
+    - Default: `true`
+- `checkIntervalMs?: number`
+    - Minimum interval (ms) between checks on route changes
+    - Default: `30000`
 
-[npm-downloads-src]: https://img.shields.io/npm/dm/my-module.svg?style=flat&colorA=020420&colorB=00DC82
-[npm-downloads-href]: https://npm.chart.dev/my-module
+## Important Notes
 
-[license-src]: https://img.shields.io/npm/l/my-module.svg?style=flat&colorA=020420&colorB=00DC82
-[license-href]: https://npmjs.com/package/my-module
+- The client fetch path is currently fixed to `"/version.json"`.
+- If you change `filePath`, that file still needs to be reachable at `"/version.json"` for the current client logic.
+- Version checks are skipped when the tab is not visible or the browser is offline.
 
-[nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt
-[nuxt-href]: https://nuxt.com
+## License
+
+MIT
