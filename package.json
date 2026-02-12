@@ -1,6 +1,6 @@
 {
     "name": "nuxt-deploy-reload",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Nuxt module that reloads clients when a new deployment is detected.",
     "repository": "nuxt-deploy-reload",
     "license": "MIT",
